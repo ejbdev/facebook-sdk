@@ -37,9 +37,11 @@ import urllib
 import hashlib
 import hmac
 import base64
-import requests
 import json
+
+import requests
 import re
+
 
 # Find a query string parser
 try:
@@ -200,9 +202,26 @@ class GraphAPI(object):
         """
         object_id = album_id or "me"
         kwargs.update({"message": message})
-        self.request(self.version + "/" + object_id,
+        self.request(self.version + "/" + object_id + "/photos",
                      post_args=kwargs,
                      files={"file": image},
+                     method="POST")
+
+    def put_video(self, video, title=None, description=None, album_id=None, **kwargs):
+        """Uploads a video using multipart/form-data.
+
+        video=File like object for the video
+        title=Title for your video
+        description=Description for your video
+        album_id=None posts to /me/videos which uses or creates and uses
+        an album for your application.
+
+        """
+        object_id = album_id or "me"
+        kwargs.update({"title": title, 'description': description})
+        self.request(self.version + "/" + object_id + "/videos",
+                     post_args=kwargs,
+                     files={"file": video},
                      method="POST")
 
     def get_version(self):
